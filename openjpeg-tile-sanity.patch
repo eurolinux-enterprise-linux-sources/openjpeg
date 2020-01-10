@@ -1,0 +1,56 @@
+Enforce sanity checks on tile number and tile length, even when the (rather
+broken) USE_JPWL code isn't enabled.  CVE-2012-3358
+
+
+diff -Naur OpenJPEG_v1_3.orig/libopenjpeg/j2k.c OpenJPEG_v1_3/libopenjpeg/j2k.c
+--- OpenJPEG_v1_3.orig/libopenjpeg/j2k.c	2007-12-19 07:28:40.000000000 -0500
++++ OpenJPEG_v1_3/libopenjpeg/j2k.c	2010-11-02 12:50:57.342204186 -0400
+@@ -1282,7 +1282,7 @@
+ 		static int backup_tileno = 0;
+ 
+ 		/* tileno is negative or larger than the number of tiles!!! */
+-		if ((tileno < 0) || (tileno > (cp->tw * cp->th))) {
++		if ((tileno < 0) || (tileno >= (cp->tw * cp->th))) {
+ 			opj_event_msg(j2k->cinfo, EVT_ERROR,
+ 				"JPWL: bad tile number (%d out of a maximum of %d)\n",
+ 				tileno, (cp->tw * cp->th));
+@@ -1299,8 +1299,18 @@
+ 
+ 		/* keep your private count of tiles */
+ 		backup_tileno++;
+-	};
++	}
++	else
+ #endif /* USE_JPWL */
++	{
++		/* tileno is negative or larger than the number of tiles!!! */
++		if ((tileno < 0) || (tileno >= (cp->tw * cp->th))) {
++			opj_event_msg(j2k->cinfo, EVT_ERROR,
++				"JPWL: bad tile number (%d out of a maximum of %d)\n",
++				tileno, (cp->tw * cp->th));
++			return;
++		}
++	}
+ 	
+ 	if (cp->tileno_size == 0) {
+ 		cp->tileno[cp->tileno_size] = tileno;
+@@ -1338,8 +1348,18 @@
+ 				totlen);
+ 		}
+ 
+-	};
++	}
++	else
+ #endif /* USE_JPWL */
++	{
++		/* totlen is negative or larger than the bytes left!!! */
++		if ((totlen < 0) || (totlen > (cio_numbytesleft(cio) + 8))) {
++			opj_event_msg(j2k->cinfo, EVT_ERROR,
++				"JPWL: bad tile byte size (%d bytes against %d bytes left)\n",
++				totlen, cio_numbytesleft(cio) + 8);
++			return;
++		}
++	}
+ 
+ 	if (!totlen)
+ 		totlen = cio_numbytesleft(cio) + 8;
