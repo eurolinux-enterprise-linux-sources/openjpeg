@@ -3,7 +3,7 @@
 
 Name:    openjpeg
 Version: 1.3
-Release: 10%{?dist}
+Release: 11%{?dist}
 Summary: OpenJPEG command line tools
 
 Group:     Applications/Multimedia
@@ -154,9 +154,13 @@ rm -rf %{buildroot}
 %{_libdir}/libopenjpeg.so
 
 %changelog
-* Wed Dec 11 2013 Petr Hracek <phracek@redhat.com> 1.3-10
+* Mon Dec 01 2014 Petr Hracek <phracek@redhat.com> - 1.3-11
+- Fix for CVE-2013-6045 breaks decoding of chroma-subsampled
+Resolves: 1047494
+
+* Wed Oct 01 2014 Petr Hracek <phracek@redhat.com> 1.3-10
 - Apply patch for CVE-2013-6054 CVE-2013-1447 CVE-2013-6045 CVE-2013-6052 
-Resolves: #1038985 CVE-2013-6054 CVE-2013-1447 CVE-2013-6045 CVE-2013-6052 
+Resolves: #1038987 CVE-2013-6054 CVE-2013-1447 CVE-2013-6045 CVE-2013-6052 
 
 * Wed Sep 12 2012 Tom Lane <tgl@redhat.com> 1.3-9
 - Apply patch for CVE-2012-3535
