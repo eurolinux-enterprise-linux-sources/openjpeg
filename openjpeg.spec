@@ -3,7 +3,7 @@
 
 Name:    openjpeg
 Version: 1.3
-Release: 8%{?dist}
+Release: 9%{?dist}
 Summary: OpenJPEG command line tools
 
 Group:     Applications/Multimedia
@@ -36,6 +36,7 @@ Patch29: openjpeg-svn501-image-create0.patch
 Patch30: openjpeg-svn505-error-check.patch
 Patch31: openjpeg-cve-2009-5030.patch
 Patch32: openjpeg-tile-sanity.patch
+Patch33: openjpeg-cve-2012-3535.patch
 
 ## upstreamable patches
 # libopenjpeg has undefined references, http://bugzilla.redhat.com/467661
@@ -89,6 +90,7 @@ rm -rf libs
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
+%patch33 -p1
 %patch50 -p1 -b .libm
 
 %build
@@ -144,6 +146,10 @@ rm -rf %{buildroot}
 %{_libdir}/libopenjpeg.so
 
 %changelog
+* Wed Sep 12 2012 Tom Lane <tgl@redhat.com> 1.3-9
+- Apply patch for CVE-2012-3535
+Resolves: CVE-2012-3535
+
 * Wed Jun 27 2012 Tom Lane <tgl@redhat.com> 1.3-8
 - Apply patches for CVE-2009-5030, CVE-2012-3358
 Resolves: #831561
