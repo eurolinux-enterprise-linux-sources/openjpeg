@@ -3,7 +3,7 @@
 
 Name:    openjpeg
 Version: 1.3
-Release: 9%{?dist}
+Release: 10%{?dist}
 Summary: OpenJPEG command line tools
 
 Group:     Applications/Multimedia
@@ -37,6 +37,10 @@ Patch30: openjpeg-svn505-error-check.patch
 Patch31: openjpeg-cve-2009-5030.patch
 Patch32: openjpeg-tile-sanity.patch
 Patch33: openjpeg-cve-2012-3535.patch
+Patch34: openjpeg-CVE-2013-6054.patch
+Patch35: openjpeg-CVE-2013-1447.patch
+Patch36: openjpeg-CVE-2013-6045.patch
+Patch37: openjpeg-CVE-2013-6052.patch
 
 ## upstreamable patches
 # libopenjpeg has undefined references, http://bugzilla.redhat.com/467661
@@ -91,6 +95,10 @@ rm -rf libs
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
+%patch34 -p1 -b CVE-2013-6054.patch
+%patch35 -p1 -b CVE-2013-1447.patch
+%patch36 -p1 -b CVE-2013-6045.patch
+%patch37 -p1 -b CVE-2013-6052.patch
 %patch50 -p1 -b .libm
 
 %build
@@ -146,13 +154,17 @@ rm -rf %{buildroot}
 %{_libdir}/libopenjpeg.so
 
 %changelog
+* Wed Dec 11 2013 Petr Hracek <phracek@redhat.com> 1.3-10
+- Apply patch for CVE-2013-6054 CVE-2013-1447 CVE-2013-6045 CVE-2013-6052 
+Resolves: #1038985 CVE-2013-6054 CVE-2013-1447 CVE-2013-6045 CVE-2013-6052 
+
 * Wed Sep 12 2012 Tom Lane <tgl@redhat.com> 1.3-9
 - Apply patch for CVE-2012-3535
 Resolves: CVE-2012-3535
 
 * Wed Jun 27 2012 Tom Lane <tgl@redhat.com> 1.3-8
 - Apply patches for CVE-2009-5030, CVE-2012-3358
-Resolves: #831561
+Resolves: #831562
 - Include -DCMAKE_INSTALL_LIBDIR in cmake call; fixes FTBFS with recent
   versions of cmake
 
