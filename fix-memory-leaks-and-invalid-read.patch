@@ -1,0 +1,112 @@
+From 1c4d24f1ba09690ac799e7dfff0681c20ca21b0b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Nikola=20Forr=C3=B3?= <nforro@redhat.com>
+Date: Wed, 1 Mar 2017 15:01:17 +0100
+Subject: [PATCH 4/4] Fix memory leaks and invalid read in cio_bytein
+
+---
+ codec/j2k_to_image.c | 3 +++
+ libopenjpeg/cio.c    | 5 ++---
+ libopenjpeg/j2k.c    | 4 +++-
+ libopenjpeg/tcd.c    | 7 +++++++
+ 4 files changed, 15 insertions(+), 4 deletions(-)
+
+diff --git a/codec/j2k_to_image.c b/codec/j2k_to_image.c
+index feee30a..b764339 100755
+--- a/codec/j2k_to_image.c
++++ b/codec/j2k_to_image.c
+@@ -620,6 +620,7 @@ int main(int argc, char **argv) {
+ 				fprintf(stderr, "ERROR -> j2k_to_image: failed to decode image!\n");
+ 				opj_destroy_decompress(dinfo);
+ 				opj_cio_close(cio);
++				free(src);
+ 				return 1;
+ 			}
+ 
+@@ -662,6 +663,7 @@ int main(int argc, char **argv) {
+ 				fprintf(stderr, "ERROR -> j2k_to_image: failed to decode image!\n");
+ 				opj_destroy_decompress(dinfo);
+ 				opj_cio_close(cio);
++				free(src);
+ 				return 1;
+ 			}
+ 
+@@ -704,6 +706,7 @@ int main(int argc, char **argv) {
+ 				fprintf(stderr, "ERROR -> j2k_to_image: failed to decode image!\n");
+ 				opj_destroy_decompress(dinfo);
+ 				opj_cio_close(cio);
++				free(src);
+ 				return 1;
+ 			}
+ 
+diff --git a/libopenjpeg/cio.c b/libopenjpeg/cio.c
+index 209065e..a5c18d0 100755
+--- a/libopenjpeg/cio.c
++++ b/libopenjpeg/cio.c
+@@ -146,9 +146,8 @@ bool cio_byteout(opj_cio_t *cio, unsigned char v) {
+  * Read a byte.
+  */
+ unsigned char cio_bytein(opj_cio_t *cio) {
+-	if (cio->bp < cio->start) {
+-		opj_event_msg(cio->cinfo, EVT_ERROR, "read error: trying to read from before the start of the codestream (start = %d, current = %d, end = %d\n", cio->start, cio->bp, cio->end);
+-		abort();
++	if (cio->bp >= cio->end) {
++		opj_event_msg(cio->cinfo, EVT_ERROR, "read error: passed the end of the codestream (start = %d, current =     %d, end = %d\n", cio->start, cio->bp, cio->end);
+ 		return 0;
+ 	}
+ 	return *cio->bp++;
+diff --git a/libopenjpeg/j2k.c b/libopenjpeg/j2k.c
+index 114888a..875caae 100755
+--- a/libopenjpeg/j2k.c
++++ b/libopenjpeg/j2k.c
+@@ -1982,8 +1982,10 @@ opj_image_t* j2k_decode(opj_j2k_t *j2k, opj_cio_t *cio, opj_codestream_info_t *c
+ 		if (e->handler) {
+ 			(*e->handler)(j2k);
+ 		}
+-		if (j2k->state & J2K_STATE_ERR) 
++		if (j2k->state & J2K_STATE_ERR) {
++			opj_image_destroy(image);
+ 			return NULL;	
++		}
+ 
+ 		if (j2k->state == J2K_STATE_MT) {
+ 			break;
+diff --git a/libopenjpeg/tcd.c b/libopenjpeg/tcd.c
+index 4aa0bb8..5b1f2ec 100755
+--- a/libopenjpeg/tcd.c
++++ b/libopenjpeg/tcd.c
+@@ -1437,6 +1437,7 @@ bool tcd_decode_tile(opj_tcd_t *tcd, unsigned char *src, int len, int tileno, op
+ 			if (tcd->image->comps[compno].resno_decoded < 0) {				
+ 				opj_event_msg(tcd->cinfo, EVT_ERROR, "Error decoding tile. The number of resolutions to remove [%d+1] is higher than the number "
+ 					" of resolutions in the original codestream [%d]\nModify the cp_reduce parameter.\n", tcd->cp->reduce, tile->comps[compno].numresolutions);
++				opj_aligned_free(tilec->data);
+ 				return false;
+ 			}
+ 		}
+@@ -1446,11 +1447,13 @@ bool tcd_decode_tile(opj_tcd_t *tcd, unsigned char *src, int len, int tileno, op
+ 			if (tcd->tcp->tccps[compno].qmfbid == 1) {
+ 				if (! dwt_decode(tilec, numres2decode)) {
+ 		            opj_event_msg(tcd->cinfo, EVT_ERROR, "Error during DWT decoding\n");
++					opj_aligned_free(tilec->data);
+         		    return false;
+ 				}
+ 			} else {
+ 				if (! dwt_decode_real(tilec, numres2decode)) {
+ 		            opj_event_msg(tcd->cinfo, EVT_ERROR, "Error during DWT decoding\n");
++					opj_aligned_free(tilec->data);
+         		    return false;
+ 				}
+ 			}
+@@ -1469,6 +1472,10 @@ bool tcd_decode_tile(opj_tcd_t *tcd, unsigned char *src, int len, int tileno, op
+             (  tile->comps[1].x1 - tile->comps[1].x0) * (tile->comps[1].y1 - tile->comps[1].y0) < n ||
+             (  tile->comps[2].x1 - tile->comps[2].x0) * (tile->comps[2].y1 - tile->comps[2].y0) < n) {
+             opj_event_msg(tcd->cinfo, EVT_ERROR, "Tiles don't all have the same dimension. Skip the MCT step.\n");
++			for (compno = 0; compno < tile->numcomps; compno++) {
++				opj_tcd_tilecomp_t *tilec = &tile->comps[compno];
++				opj_aligned_free(tilec->data);
++			}
+             return false;
+           }
+ 
+-- 
+2.7.4
+

@@ -1,0 +1,67 @@
+From 39843fc302fb2ce82863c11cbad76ea4b91beacc Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Nikola=20Forr=C3=B3?= <nforro@redhat.com>
+Date: Wed, 8 Feb 2017 16:38:29 +0100
+Subject: [PATCH 2/2] Fix Coverity issues
+
+---
+ libopenjpeg/pi.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/libopenjpeg/pi.c b/libopenjpeg/pi.c
+index ac7654c..06e76af 100755
+--- a/libopenjpeg/pi.c
++++ b/libopenjpeg/pi.c
+@@ -209,14 +209,14 @@ if (!pi->tp_on){
+ 					try1 = int_ceildiv(pi->ty1, comp->dy << levelno);
+ 					rpx = res->pdx + levelno;
+ 					rpy = res->pdy + levelno;
+-					if (!((pi->y % (comp->dy << rpy) == 0) || ((pi->y == pi->ty0) && ((try0 << levelno) % (1 << rpx))))){
++					if (!((pi->y % (comp->dy << rpy) == 0) || ((pi->y == pi->ty0) && ((try0 << levelno) % (1 << rpy))))){
+ 						continue;	
+ 					}
+ 					if (!((pi->x % (comp->dx << rpx) == 0) || ((pi->x == pi->tx0) && ((trx0 << levelno) % (1 << rpx))))){
+ 						continue; 
+ 					}
+ 					
+-					if ((res->pw==0)||(res->pw==0)) continue;
++					if ((res->pw==0)||(res->ph==0)) continue;
+ 					
+ 					if ((trx0==trx1)||(try0==try1)) continue;
+ 					
+@@ -290,14 +290,14 @@ static bool pi_next_pcrl(opj_pi_iterator_t * pi) {
+ 					try1 = int_ceildiv(pi->ty1, comp->dy << levelno);
+ 					rpx = res->pdx + levelno;
+ 					rpy = res->pdy + levelno;
+-					if (!((pi->y % (comp->dy << rpy) == 0) || ((pi->y == pi->ty0) && ((try0 << levelno) % (1 << rpx))))){
++					if (!((pi->y % (comp->dy << rpy) == 0) || ((pi->y == pi->ty0) && ((try0 << levelno) % (1 << rpy))))){
+ 						continue;	
+ 					}
+ 					if (!((pi->x % (comp->dx << rpx) == 0) || ((pi->x == pi->tx0) && ((trx0 << levelno) % (1 << rpx))))){
+ 						continue; 
+ 					}
+ 					
+-					if ((res->pw==0)||(res->pw==0)) continue;
++					if ((res->pw==0)||(res->ph==0)) continue;
+ 					
+ 					if ((trx0==trx1)||(try0==try1)) continue;
+ 					
+@@ -369,14 +369,14 @@ static bool pi_next_cprl(opj_pi_iterator_t * pi) {
+ 					try1 = int_ceildiv(pi->ty1, comp->dy << levelno);
+ 					rpx = res->pdx + levelno;
+ 					rpy = res->pdy + levelno;
+-					if (!((pi->y % (comp->dy << rpy) == 0) || ((pi->y == pi->ty0) && ((try0 << levelno) % (1 << rpx))))){
++					if (!((pi->y % (comp->dy << rpy) == 0) || ((pi->y == pi->ty0) && ((try0 << levelno) % (1 << rpy))))){
+ 						continue;	
+ 					}
+ 					if (!((pi->x % (comp->dx << rpx) == 0) || ((pi->x == pi->tx0) && ((trx0 << levelno) % (1 << rpx))))){
+ 						continue; 
+ 					}
+ 					
+-					if ((res->pw==0)||(res->pw==0)) continue;
++					if ((res->pw==0)||(res->ph==0)) continue;
+ 					
+ 					if ((trx0==trx1)||(try0==try1)) continue;
+ 					
+-- 
+2.7.4
+

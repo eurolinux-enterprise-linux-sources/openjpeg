@@ -3,7 +3,7 @@
 
 Name:    openjpeg
 Version: 1.3
-Release: 11%{?dist}
+Release: 16%{?dist}
 Summary: OpenJPEG command line tools
 
 Group:     Applications/Multimedia
@@ -41,6 +41,12 @@ Patch34: openjpeg-CVE-2013-6054.patch
 Patch35: openjpeg-CVE-2013-1447.patch
 Patch36: openjpeg-CVE-2013-6045.patch
 Patch37: openjpeg-CVE-2013-6052.patch
+Patch38: openjpeg-CVE-2016-7163.patch
+Patch39: fix-coverity-issues.patch
+Patch40: openjpeg-CVE-2016-5139.patch
+Patch41: openjpeg-CVE-2016-5158.patch
+Patch42: openjpeg-CVE-2016-5159.patch
+Patch43: fix-memory-leaks-and-invalid-read.patch
 
 ## upstreamable patches
 # libopenjpeg has undefined references, http://bugzilla.redhat.com/467661
@@ -99,6 +105,12 @@ rm -rf libs
 %patch35 -p1 -b CVE-2013-1447.patch
 %patch36 -p1 -b CVE-2013-6045.patch
 %patch37 -p1 -b CVE-2013-6052.patch
+%patch38 -p1 -b CVE-2016-7163.patch
+%patch39 -p1 -b coverity.patch
+%patch40 -p1 -b CVE-2016-5139.patch
+%patch41 -p1 -b CVE-2016-5158.patch
+%patch42 -p1 -b CVE-2016-5159.patch
+%patch43 -p1 -b memory-leaks-and-invalid-read.patch
 %patch50 -p1 -b .libm
 
 %build
@@ -154,6 +166,29 @@ rm -rf %{buildroot}
 %{_libdir}/libopenjpeg.so
 
 %changelog
+* Thu Mar 02 2017 Nikola Forró <nforro@redhat.com> - 1.3-16
+- Revert previous changes in patch for CVE-2016-5159
+- Fix double free in patch for CVE-2016-5139
+- Fix memory leaks and invalid read in cio_bytein
+  Related: #1419775
+
+* Wed Feb 22 2017 Nikola Forró <nforro@redhat.com> - 1.3-15
+- Add two more allocation checks to patch for CVE-2016-5159
+  Related: #1419775
+
+* Tue Feb 21 2017 Nikola Forró <nforro@redhat.com> - 1.3-14
+- Add patches for CVE-2016-5139, CVE-2016-5158, CVE-2016-5159
+  Related: #1419775
+
+* Tue Feb 14 2017 Nikola Forró <nforro@redhat.com> - 1.3-13
+- Fix patch name: CVE-2016-9675 => CVE-2016-7163
+  Related: #1419775
+
+* Wed Feb 08 2017 Nikola Forró <nforro@redhat.com> - 1.3-12
+- Add patch for CVE-2016-9675
+- Fix Coverity issues
+  Resolves: #1419775
+
 * Mon Dec 01 2014 Petr Hracek <phracek@redhat.com> - 1.3-11
 - Fix for CVE-2013-6045 breaks decoding of chroma-subsampled
 Resolves: 1047494
