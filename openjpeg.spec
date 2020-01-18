@@ -9,7 +9,7 @@
 
 Name:    openjpeg
 Version: 1.5.1
-Release: 17%{?dist}
+Release: 9%{?dist}
 Summary: JPEG 2000 command line tools
 
 License: BSD
@@ -42,13 +42,6 @@ Patch104: openjpeg-CVE-2013-6045.patch
 Patch105: openjpeg-CVE-2013-6052.patch
 Patch106: openjpeg-CVE-2013-6053.patch
 Patch107: openjpeg-CVE-2013-1447.patch
-Patch108: openjpeg-CVE-2016-7163.patch
-Patch109: openjpeg-CVE-2016-9573.patch
-Patch110: openjpeg-fix-coverity-issues.patch
-Patch111: openjpeg-CVE-2016-5139.patch
-Patch112: openjpeg-CVE-2016-5158.patch
-Patch113: openjpeg-CVE-2016-5159.patch
-Patch114: openjpeg-fix-memory-leaks.patch
 
 
 %if 0%{?cmake_build}
@@ -110,13 +103,6 @@ autoreconf -i -f
 %patch105 -p1 -b .CVE-2013-6052
 %patch106 -p1 -b .CVE-2013-6053
 %patch107 -p1 -b .CVE-2013-1447
-%patch108 -p1 -b .CVE-2016-7163
-%patch109 -p1 -b .CVE-2016-9573
-%patch110 -p1 -b .coverity
-%patch111 -p1 -b .CVE-2016-5139
-%patch112 -p1 -b .CVE-2016-5158
-%patch113 -p1 -b .CVE-2016-5159
-%patch114 -p1 -b .memory-leaks
 
 %build
 
@@ -128,7 +114,6 @@ pushd %{_target_platform}
 %{cmake} \
   -DBUILD_DOC:BOOL=ON \
   -DBUILD_SHARED_LIBS:BOOL=ON \
-  -DBUILD_MJ2:BOOL=ON \
   %{?runcheck:-DBUILD_TESTING:BOOL=ON} \
   -DCMAKE_BUILD_TYPE=Release \
   -DOPENJPEG_INSTALL_LIB_DIR:PATH=%{_lib} \
@@ -176,10 +161,6 @@ make test -C %{_target_platform}
 %{_bindir}/image_to_j2k
 %{_bindir}/j2k_dump
 %{_bindir}/j2k_to_image
-%{_bindir}/extract_j2k_from_mj2
-%{_bindir}/frames_to_mj2
-%{_bindir}/mj2_to_frames
-%{_bindir}/wrap_j2k_in_mj2
 %{_mandir}/man1/*image_to_j2k.1*
 %{_mandir}/man1/*j2k_dump.1*
 %{_mandir}/man1/*j2k_to_image.1*
@@ -208,40 +189,6 @@ make test -C %{_target_platform}
 
 
 %changelog
-* Thu Mar 02 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-17
-- Revert previous changes in patch for CVE-2016-5159
-- Fix memory leaks
-  Related: #1419774
-
-* Tue Feb 21 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-16
-- Add two more allocation checks to patch for CVE-2016-5159
-  Related: #1419774
-
-* Mon Feb 20 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-15
-- Fix CWE-825 errors in patch for CVE-2016-5158
-  Related: #1419774
-
-* Thu Feb 16 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-14
-- Add patches for CVE-2016-5139, CVE-2016-5158, CVE-2016-5159
-  Related: #1419774
-
-* Tue Feb 14 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-13
-- Fix patch name: CVE-2016-9675 => CVE-2016-7163
-  Related: #1419774
-
-* Wed Feb 08 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-12
-- Add patches for CVE-2016-9573 and CVE-2016-9675
-- Fix Coverity issues
-  Resolves: #1419774
-
-* Wed Jan 11 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-11
-- Fix decoding of chroma-subsampled images
-  Resolves: #1207473
-
-* Thu Sep 04 2014 Petr Hracek <phracek@redhat.com> - 1.5.1-10
--openjpeg: missing some binaries
-Resolves: #1136713
-
 * Tue Apr 08 2014 Petr Hracek <phracek@redhat.com> -1.5.1-9
 - Apply CVE-2013-1447 openjpeg: multiple denial of service flaws
 Resolves: #1038415
