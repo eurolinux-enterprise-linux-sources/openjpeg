@@ -9,7 +9,7 @@
 
 Name:    openjpeg
 Version: 1.5.1
-Release: 16%{?dist}
+Release: 17%{?dist}
 Summary: JPEG 2000 command line tools
 
 License: BSD
@@ -208,32 +208,35 @@ make test -C %{_target_platform}
 
 
 %changelog
-* Thu Mar 02 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-16
+* Thu Mar 02 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-17
 - Revert previous changes in patch for CVE-2016-5159
 - Fix memory leaks
-  Related: #1419772
+  Related: #1419774
 
-* Tue Feb 21 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-15
+* Tue Feb 21 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-16
 - Add two more allocation checks to patch for CVE-2016-5159
-  Related: #1419772
+  Related: #1419774
 
-* Mon Feb 20 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-14
+* Mon Feb 20 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-15
 - Fix CWE-825 errors in patch for CVE-2016-5158
-  Related: #1419772
+  Related: #1419774
 
-* Thu Feb 16 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-13
+* Thu Feb 16 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-14
 - Add patches for CVE-2016-5139, CVE-2016-5158, CVE-2016-5159
-  Related: #1419772
+  Related: #1419774
 
-* Tue Feb 14 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-12
+* Tue Feb 14 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-13
 - Fix patch name: CVE-2016-9675 => CVE-2016-7163
-  Related: #1419772
+  Related: #1419774
 
-* Wed Feb 08 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-11
-- Fix decoding of chroma-subsampled images
+* Wed Feb 08 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-12
 - Add patches for CVE-2016-9573 and CVE-2016-9675
 - Fix Coverity issues
-  Resolves: #1419772
+  Resolves: #1419774
+
+* Wed Jan 11 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-11
+- Fix decoding of chroma-subsampled images
+  Resolves: #1207473
 
 * Thu Sep 04 2014 Petr Hracek <phracek@redhat.com> - 1.5.1-10
 -openjpeg: missing some binaries
