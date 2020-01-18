@@ -1,0 +1,49 @@
+From 40dbfc14ffd688a7a0f6ad8c89bcd6fa550a7b44 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Nikola=20Forr=C3=B3?= <nforro@redhat.com>
+Date: Wed, 1 Mar 2017 16:19:16 +0100
+Subject: [PATCH 4/4] Fix memory leaks
+
+---
+ libopenjpeg/tcd.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/libopenjpeg/tcd.c b/libopenjpeg/tcd.c
+index 3f5785f..86ffc90 100644
+--- a/libopenjpeg/tcd.c
++++ b/libopenjpeg/tcd.c
+@@ -1470,6 +1470,7 @@ opj_bool tcd_decode_tile(opj_tcd_t *tcd, unsigned char *src, int len, int tileno
+ 			if ( tile->comps[compno].numresolutions < ( tcd->cp->reduce - 1 ) ) {				
+ 				opj_event_msg(tcd->cinfo, EVT_ERROR, "Error decoding tile. The number of resolutions to remove [%d+1] is higher than the number "
+ 					" of resolutions in the original codestream [%d]\nModify the cp_reduce parameter.\n", tcd->cp->reduce, tile->comps[compno].numresolutions);
++				opj_aligned_free(tilec->data);
+ 				return OPJ_FALSE;
+ 			}
+       else {
+@@ -1483,11 +1484,13 @@ opj_bool tcd_decode_tile(opj_tcd_t *tcd, unsigned char *src, int len, int tileno
+ 			if (tcd->tcp->tccps[compno].qmfbid == 1) {
+ 				if (! dwt_decode(tilec, numres2decode)) {
+ 		            opj_event_msg(tcd->cinfo, EVT_ERROR, "Error during DWT decoding\n");
++		            opj_aligned_free(tilec->data);
+         		    return OPJ_FALSE;
+ 				}
+ 			} else {
+ 				if (! dwt_decode_real(tilec, numres2decode)) {
+ 		            opj_event_msg(tcd->cinfo, EVT_ERROR, "Error during DWT decoding\n");
++		            opj_aligned_free(tilec->data);
+         		    return OPJ_FALSE;
+ 				}
+ 			}
+@@ -1507,6 +1510,10 @@ opj_bool tcd_decode_tile(opj_tcd_t *tcd, unsigned char *src, int len, int tileno
+ 			  (  tile->comps[1].x1 - tile->comps[1].x0) * (tile->comps[1].y1 - tile->comps[1].y0) < n ||
+ 			  (  tile->comps[2].x1 - tile->comps[2].x0) * (tile->comps[2].y1 - tile->comps[2].y0) < n) {
+ 				opj_event_msg(tcd->cinfo, EVT_ERROR, "Tiles don't all have the same dimension. Skip the MCT step    .\n");
++				for (compno = 0; compno < tile->numcomps; compno++) {
++					opj_tcd_tilecomp_t *tilec = &tile->comps[compno];
++					opj_aligned_free(tilec->data);
++				}
+ 				return OPJ_FALSE;
+ 			}
+ 
+-- 
+2.7.4
+

@@ -9,7 +9,7 @@
 
 Name:    openjpeg
 Version: 1.5.1
-Release: 10%{?dist}
+Release: 16%{?dist}
 Summary: JPEG 2000 command line tools
 
 License: BSD
@@ -42,6 +42,13 @@ Patch104: openjpeg-CVE-2013-6045.patch
 Patch105: openjpeg-CVE-2013-6052.patch
 Patch106: openjpeg-CVE-2013-6053.patch
 Patch107: openjpeg-CVE-2013-1447.patch
+Patch108: openjpeg-CVE-2016-7163.patch
+Patch109: openjpeg-CVE-2016-9573.patch
+Patch110: openjpeg-fix-coverity-issues.patch
+Patch111: openjpeg-CVE-2016-5139.patch
+Patch112: openjpeg-CVE-2016-5158.patch
+Patch113: openjpeg-CVE-2016-5159.patch
+Patch114: openjpeg-fix-memory-leaks.patch
 
 
 %if 0%{?cmake_build}
@@ -103,6 +110,13 @@ autoreconf -i -f
 %patch105 -p1 -b .CVE-2013-6052
 %patch106 -p1 -b .CVE-2013-6053
 %patch107 -p1 -b .CVE-2013-1447
+%patch108 -p1 -b .CVE-2016-7163
+%patch109 -p1 -b .CVE-2016-9573
+%patch110 -p1 -b .coverity
+%patch111 -p1 -b .CVE-2016-5139
+%patch112 -p1 -b .CVE-2016-5158
+%patch113 -p1 -b .CVE-2016-5159
+%patch114 -p1 -b .memory-leaks
 
 %build
 
@@ -194,6 +208,33 @@ make test -C %{_target_platform}
 
 
 %changelog
+* Thu Mar 02 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-16
+- Revert previous changes in patch for CVE-2016-5159
+- Fix memory leaks
+  Related: #1419772
+
+* Tue Feb 21 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-15
+- Add two more allocation checks to patch for CVE-2016-5159
+  Related: #1419772
+
+* Mon Feb 20 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-14
+- Fix CWE-825 errors in patch for CVE-2016-5158
+  Related: #1419772
+
+* Thu Feb 16 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-13
+- Add patches for CVE-2016-5139, CVE-2016-5158, CVE-2016-5159
+  Related: #1419772
+
+* Tue Feb 14 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-12
+- Fix patch name: CVE-2016-9675 => CVE-2016-7163
+  Related: #1419772
+
+* Wed Feb 08 2017 Nikola Forró <nforro@redhat.com> - 1.5.1-11
+- Fix decoding of chroma-subsampled images
+- Add patches for CVE-2016-9573 and CVE-2016-9675
+- Fix Coverity issues
+  Resolves: #1419772
+
 * Thu Sep 04 2014 Petr Hracek <phracek@redhat.com> - 1.5.1-10
 -openjpeg: missing some binaries
 Resolves: #1136713
