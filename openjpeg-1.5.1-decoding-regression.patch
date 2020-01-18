@@ -1,0 +1,43 @@
+From 2af07748b19ca67eaabb55c0f5e7183527e83a78 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Nikola=20Forr=C3=B3?= <nforro@redhat.com>
+Date: Thu, 5 Apr 2018 17:36:41 +0200
+Subject: [PATCH] [1.5] Remove addition from r1702 this introduced a regression as
+ seen in issue 205
+
+Fixes issue 205
+---
+ libopenjpeg/j2k.c | 18 ------------------
+ 1 file changed, 18 deletions(-)
+
+diff --git a/libopenjpeg/j2k.c b/libopenjpeg/j2k.c
+index 0a68476..e21587c 100644
+--- a/libopenjpeg/j2k.c
++++ b/libopenjpeg/j2k.c
+@@ -1560,24 +1560,6 @@ static void j2k_read_sod(opj_j2k_t *j2k) {
+ 		truncate = 1;		/* Case of a truncate codestream */
+ 	}	
+ 
+-   {/* chop padding bytes: */
+-    unsigned char *s, *e; 
+-
+-    s = cio_getbp(cio);
+-    e = s + len;
+-
+-  if(len > 8) s = e - 8;
+-
+-  if(e[-2] == 0x00 && e[-1] == 0x00) /* padding bytes */
+-  {
+-	while(e > s)
+- {
+-	if(e[-2] == 0xff && e[-1] == 0xd9)	break;
+-  --len; --e; truncate = 1;
+- }
+-  }
+-   }
+-
+ 	data = j2k->tile_data[curtileno];
+ 	data = (unsigned char*) opj_realloc(data, (j2k->tile_len[curtileno] + len) * sizeof(unsigned char));
+ 
+-- 
+2.13.6
+
